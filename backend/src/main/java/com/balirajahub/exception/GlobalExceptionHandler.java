@@ -65,4 +65,22 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(PhoneAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePhoneAlreadyExists(
+            PhoneAlreadyExistsException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordMismatchException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePasswordMismatch(
+            PasswordMismatchException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
 }

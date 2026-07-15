@@ -1,4 +1,10 @@
 package com.balirajahub.service;
 
-public class AuthService {
+import com.balirajahub.dto.request.RegisterRequest;
+import com.balirajahub.dto.response.AuthResponse;
+
+public interface AuthService {
+
+    AuthResponse register(RegisterRequest request);
+
 }
