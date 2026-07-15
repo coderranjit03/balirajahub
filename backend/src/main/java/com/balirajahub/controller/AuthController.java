@@ -1,5 +1,7 @@
 package com.balirajahub.controller;
 
+import com.balirajahub.common.ApiResponse;
+import com.balirajahub.dto.request.LoginRequest;
 import com.balirajahub.dto.request.RegisterRequest;
 import com.balirajahub.dto.response.AuthResponse;
 import com.balirajahub.service.AuthService;
@@ -17,13 +19,24 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(
+    public ResponseEntity<ApiResponse<AuthResponse>> register(
             @Valid @RequestBody RegisterRequest request) {
 
         AuthResponse response = authService.register(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(response);
+                .body(ApiResponse.success("User registered successfully.", response));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        AuthResponse response = authService.login(request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Login successful.", response)
+        );
     }
 }
