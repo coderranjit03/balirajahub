@@ -35,14 +35,23 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth ->
                         auth
+                                // Public APIs
                                 .requestMatchers("/api/auth/**").permitAll()
+
+                                // Admin APIs
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                                // Farmer APIs
+                                .requestMatchers("/api/farmer/**").hasAnyRole("FARMER", "ADMIN")
+
+                                // Any other API
                                 .anyRequest().authenticated()
                 )
 
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)
 
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(httpBasic -> httpBasic.disable());
 
         return http.build();
     }
