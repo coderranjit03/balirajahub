@@ -7,6 +7,7 @@ import com.balirajahub.service.FarmerProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/farmer/profile")
@@ -49,6 +50,19 @@ public class FarmerProfileController {
 
         return ApiResponse.success(
                 "Farmer profile updated successfully.",
+                response
+        );
+    }
+
+    @PostMapping("/image")
+    public ApiResponse<FarmerProfileResponse> uploadProfileImage(
+            @RequestParam("image") MultipartFile image) {
+
+        FarmerProfileResponse response =
+                farmerProfileService.uploadProfileImage(image);
+
+        return ApiResponse.success(
+                "Profile image uploaded successfully.",
                 response
         );
     }

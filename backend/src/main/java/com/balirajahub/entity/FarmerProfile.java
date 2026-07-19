@@ -33,5 +33,6 @@ public class FarmerProfile {
 
     private Double farmSize;
 
+    @Column(name = "profile_image")
     private String profileImage;
 }
