@@ -83,4 +83,20 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
+    @ExceptionHandler(FarmerProfileAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleFarmerProfileAlreadyExists(
+            FarmerProfileAlreadyExistsException ex) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(FarmerProfileNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleFarmerProfileNotFound(
+            FarmerProfileNotFoundException ex) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
 }

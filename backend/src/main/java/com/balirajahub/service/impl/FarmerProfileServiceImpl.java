@@ -3,6 +3,8 @@ package com.balirajahub.service.impl;
 import com.balirajahub.dto.request.FarmerProfileRequest;
 import com.balirajahub.dto.response.FarmerProfileResponse;
 import com.balirajahub.entity.FarmerProfile;
+import com.balirajahub.exception.FarmerProfileAlreadyExistsException;
+import com.balirajahub.exception.FarmerProfileNotFoundException;
 import com.balirajahub.repository.FarmerProfileRepository;
 import com.balirajahub.repository.UserRepository;
 import com.balirajahub.service.FarmerProfileService;
@@ -26,7 +28,9 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
         User user = getCurrentUser();
 
         if (farmerProfileRepository.existsByUser(user)) {
-            throw new IllegalStateException("Farmer profile already exists.");
+            throw new FarmerProfileAlreadyExistsException(
+                    "Farmer profile already exists."
+            );
         }
 
         FarmerProfile farmerProfile = FarmerProfile.builder()
@@ -51,7 +55,9 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
 
         FarmerProfile profile = farmerProfileRepository.findByUser(user)
                 .orElseThrow(() ->
-                        new IllegalStateException("Farmer profile not found."));
+                        new FarmerProfileNotFoundException(
+                                "Farmer profile not found."
+                        ));
 
         return mapToResponse(user, profile);
     }
@@ -63,7 +69,9 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
 
         FarmerProfile profile = farmerProfileRepository.findByUser(user)
                 .orElseThrow(() ->
-                        new IllegalStateException("Farmer profile not found."));
+                        new FarmerProfileNotFoundException(
+                                "Farmer profile not found."
+                        ));
 
         profile.setVillage(request.getVillage());
         profile.setTaluka(request.getTaluka());
