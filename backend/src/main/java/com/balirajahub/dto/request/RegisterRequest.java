@@ -1,6 +1,6 @@
 package com.balirajahub.dto.request;
 
-import com.balirajahub.entity.Language;
+import com.balirajahub.entity.enums.Language;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;

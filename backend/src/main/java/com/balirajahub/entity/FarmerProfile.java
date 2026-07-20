@@ -3,6 +3,9 @@ package com.balirajahub.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "farmer_profiles")
 @Getter
@@ -35,4 +38,11 @@ public class FarmerProfile {
 
     @Column(name = "profile_image")
     private String profileImage;
+
+    @OneToMany(
+            mappedBy = "farmerProfile",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Crop> crops = new ArrayList<>();
 }

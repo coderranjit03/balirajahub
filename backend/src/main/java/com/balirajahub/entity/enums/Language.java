@@ -1,4 +1,4 @@
-package com.balirajahub.entity;
+package com.balirajahub.entity.enums;
 
 public enum Language {
     ENGLISH,

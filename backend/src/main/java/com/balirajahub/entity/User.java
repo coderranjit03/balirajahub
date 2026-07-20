@@ -1,6 +1,8 @@
 package com.balirajahub.entity;
 
 
+import com.balirajahub.entity.enums.Language;
+import com.balirajahub.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 

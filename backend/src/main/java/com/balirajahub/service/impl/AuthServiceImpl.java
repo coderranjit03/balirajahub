@@ -3,7 +3,7 @@ package com.balirajahub.service.impl;
 import com.balirajahub.dto.request.LoginRequest;
 import com.balirajahub.dto.request.RegisterRequest;
 import com.balirajahub.dto.response.AuthResponse;
-import com.balirajahub.entity.Role;
+import com.balirajahub.entity.enums.Role;
 import com.balirajahub.entity.User;
 import com.balirajahub.exception.EmailAlreadyExistsException;
 import com.balirajahub.exception.PasswordMismatchException;
