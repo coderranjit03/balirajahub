@@ -14,4 +14,6 @@ public class WeatherResponse {
     private Double windSpeed;
 
     private Integer weatherCode;
+
+    private String weatherDescription;
 }

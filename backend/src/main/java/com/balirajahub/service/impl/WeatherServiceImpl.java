@@ -5,6 +5,7 @@ import com.balirajahub.dto.external.OpenMeteoResponse;
 import com.balirajahub.dto.response.WeatherResponse;
 import com.balirajahub.entity.FarmerProfile;
 import com.balirajahub.entity.User;
+import com.balirajahub.entity.enums.WeatherCode;
 import com.balirajahub.exception.FarmerProfileNotFoundException;
 import com.balirajahub.exception.UserNotFoundException;
 import com.balirajahub.repository.FarmerProfileRepository;
@@ -53,6 +54,9 @@ public class WeatherServiceImpl implements WeatherService {
                 .temperature(response.getCurrent().getTemperature())
                 .windSpeed(response.getCurrent().getWindSpeed())
                 .weatherCode(response.getCurrent().getWeatherCode())
+                .weatherDescription(
+                        WeatherCode.getDescription(
+                                response.getCurrent().getWeatherCode()))
                 .build();
     }
 
