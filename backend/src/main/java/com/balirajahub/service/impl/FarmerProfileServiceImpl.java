@@ -46,6 +46,8 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
                 .taluka(request.getTaluka())
                 .district(request.getDistrict())
                 .state(request.getState())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
                 .pinCode(request.getPinCode())
                 .farmSize(request.getFarmSize())
                 .build();
@@ -84,6 +86,8 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
         profile.setTaluka(request.getTaluka());
         profile.setDistrict(request.getDistrict());
         profile.setState(request.getState());
+        profile.setLatitude(request.getLatitude());
+        profile.setLongitude(request.getLongitude());
         profile.setPinCode(request.getPinCode());
         profile.setFarmSize(request.getFarmSize());
 
@@ -104,6 +108,8 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
                 .taluka(profile.getTaluka())
                 .district(profile.getDistrict())
                 .state(profile.getState())
+                .latitude(profile.getLatitude())
+                .longitude(profile.getLongitude())
                 .pinCode(profile.getPinCode())
                 .farmSize(profile.getFarmSize())
                 .profileImage(profile.getProfileImage())

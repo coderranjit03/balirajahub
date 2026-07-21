@@ -32,6 +32,12 @@ public class FarmerProfile {
 
     private String state;
 
+    @Column(nullable = false)
+    private Double latitude;
+
+    @Column(nullable = false)
+    private Double longitude;
+
     private String pinCode;
 
     private Double farmSize;

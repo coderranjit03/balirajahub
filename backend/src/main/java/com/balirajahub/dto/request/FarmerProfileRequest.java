@@ -21,6 +21,12 @@ public class FarmerProfileRequest {
     @NotBlank
     private String state;
 
+    @NotNull(message = "Latitude is required.")
+    private Double latitude;
+
+    @NotNull(message = "Longitude is required.")
+    private Double longitude;
+
     @NotBlank
     private String pinCode;
 

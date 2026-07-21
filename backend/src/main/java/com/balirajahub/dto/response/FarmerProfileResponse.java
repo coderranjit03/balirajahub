@@ -25,6 +25,10 @@ public class FarmerProfileResponse {
 
     private String state;
 
+    private Double latitude;
+
+    private Double longitude;
+
     private String pinCode;
 
     private Double farmSize;
