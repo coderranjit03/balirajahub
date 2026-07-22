@@ -3,15 +3,14 @@ package com.balirajahub.service.impl;
 import com.balirajahub.dto.request.FarmerProfileRequest;
 import com.balirajahub.dto.response.FarmerProfileResponse;
 import com.balirajahub.entity.FarmerProfile;
-import com.balirajahub.exception.FarmerProfileAlreadyExistsException;
-import com.balirajahub.exception.FarmerProfileNotFoundException;
+import com.balirajahub.exception.*;
 import com.balirajahub.repository.FarmerProfileRepository;
 import com.balirajahub.repository.UserRepository;
+import com.balirajahub.service.AuthenticatedUserService;
 import com.balirajahub.service.FarmerProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.balirajahub.entity.User;
-import com.balirajahub.exception.UserNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,12 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class FarmerProfileServiceImpl implements FarmerProfileService {
 
     private final FarmerProfileRepository farmerProfileRepository;
-    private final UserRepository userRepository;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Override
     public FarmerProfileResponse createProfile(FarmerProfileRequest request) {
 
-        User user = getCurrentUser();
+        User user = authenticatedUserService.getCurrentUser();
 
         if (farmerProfileRepository.existsByUser(user)) {
             throw new FarmerProfileAlreadyExistsException(
@@ -60,7 +59,7 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
     @Override
     public FarmerProfileResponse getProfile() {
 
-        User user = getCurrentUser();
+        User user = authenticatedUserService.getCurrentUser();
 
         FarmerProfile profile = farmerProfileRepository.findByUser(user)
                 .orElseThrow(() ->
@@ -74,7 +73,7 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
     @Override
     public FarmerProfileResponse updateProfile(FarmerProfileRequest request) {
 
-        User user = getCurrentUser();
+        User user = authenticatedUserService.getCurrentUser();
 
         FarmerProfile profile = farmerProfileRepository.findByUser(user)
                 .orElseThrow(() ->
@@ -116,23 +115,13 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
                 .build();
     }
 
-    private User getCurrentUser() {
-
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        String email = authentication.getName();
-
-        return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UserNotFoundException("User not found"));
-    }
 
     @Override
     public FarmerProfileResponse uploadProfileImage(MultipartFile image) {
 
         if (image.isEmpty()) {
-            throw new IllegalArgumentException("Please select an image.");
+            throw new InvalidFileException(
+                    "Please select an image.");
         }
 
         String contentType = image.getContentType();
@@ -141,11 +130,11 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
                 !(contentType.equals("image/jpeg")
                         || contentType.equals("image/png"))) {
 
-            throw new IllegalArgumentException(
+            throw new InvalidFileException(
                     "Only JPG and PNG images are allowed.");
         }
 
-        User user = getCurrentUser();
+        User user = authenticatedUserService.getCurrentUser();
 
         FarmerProfile profile = farmerProfileRepository
                 .findByUser(user)
@@ -162,10 +151,6 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
 
             Path uploadPath = Paths.get("uploads/profile-images");
 
-            System.out.println("Upload Directory: " + uploadPath.toAbsolutePath());
-
-            System.out.println("Working Directory : " + System.getProperty("user.dir"));
-
             Files.createDirectories(uploadPath);
 
             Path filePath = uploadPath.resolve(fileName);
@@ -173,8 +158,6 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
             System.out.println("Saving File To: " + filePath.toAbsolutePath());
 
             image.transferTo(filePath);
-
-            System.out.println("Image Saved Successfully!");
 
 
             profile.setProfileImage(
@@ -188,8 +171,9 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
 
             e.printStackTrace();
 
-            throw new RuntimeException(
-                    "Failed to upload image.", e);
+            throw new ImageUploadException(
+                    "Failed to upload image.",
+                    e);
         }
     }
 }

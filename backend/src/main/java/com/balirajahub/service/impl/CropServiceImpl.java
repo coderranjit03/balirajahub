@@ -12,6 +12,7 @@ import com.balirajahub.exception.UserNotFoundException;
 import com.balirajahub.repository.CropRepository;
 import com.balirajahub.repository.FarmerProfileRepository;
 import com.balirajahub.repository.UserRepository;
+import com.balirajahub.service.AuthenticatedUserService;
 import com.balirajahub.service.CropService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class CropServiceImpl implements CropService {
 
     private final FarmerProfileRepository farmerProfileRepository;
 
-    private final UserRepository userRepository;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Override
     public CropResponse createCrop(CropRequest request) {
@@ -142,24 +143,10 @@ public class CropServiceImpl implements CropService {
                 .build();
     }
 
-    private User getCurrentUser() {
-
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
-        String email = authentication.getName();
-
-        return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UserNotFoundException("User not found."));
-
-    }
 
     private FarmerProfile getCurrentFarmerProfile() {
 
-        User user = getCurrentUser();
+        User user = authenticatedUserService.getCurrentUser();
 
         return farmerProfileRepository
                 .findByUser(user)

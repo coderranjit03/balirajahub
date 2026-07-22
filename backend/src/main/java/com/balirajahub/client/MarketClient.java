@@ -6,10 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 @RequiredArgsConstructor
 public class MarketClient {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(MarketClient.class);
 
     private final RestTemplate restTemplate;
 
@@ -39,7 +44,7 @@ public class MarketClient {
             builder.queryParam("filters[district]", district);
         }
 
-        System.out.println(builder.toUriString());
+        logger.info("Calling Market API: {}", builder.toUriString());
 
         return restTemplate.getForObject(
 

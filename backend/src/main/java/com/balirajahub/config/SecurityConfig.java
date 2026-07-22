@@ -47,7 +47,8 @@ public class SecurityConfig {
                                 // Farmer APIs
                                 .requestMatchers(
                                         "/api/farmer/**",
-                                        "/api/market/**"
+                                        "/api/market/**",
+                                        "/api/schemes/**"
                                         ).hasAnyRole("FARMER", "ADMIN")
 
                                 // Any other API

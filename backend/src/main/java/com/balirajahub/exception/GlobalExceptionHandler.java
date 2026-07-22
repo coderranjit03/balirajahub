@@ -99,4 +99,31 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
+    @ExceptionHandler(ImageUploadException.class)
+    public ResponseEntity<ApiResponse<Object>> handleImageUploadException(
+            ImageUploadException ex) {
+
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<ApiResponse<Object>> handleInvalidFileException(
+            InvalidFileException ex) {
+
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(SchemeNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleSchemeNotFoundException(
+            SchemeNotFoundException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
 }
