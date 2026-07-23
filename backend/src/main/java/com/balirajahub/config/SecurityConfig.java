@@ -48,7 +48,8 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/api/farmer/**",
                                         "/api/market/**",
-                                        "/api/schemes/**"
+                                        "/api/schemes/**",
+                                        "/api/notifications/**"
                                         ).hasAnyRole("FARMER", "ADMIN")
 
                                 // Any other API
