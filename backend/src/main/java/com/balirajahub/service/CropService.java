@@ -2,6 +2,8 @@ package com.balirajahub.service;
 
 import com.balirajahub.dto.request.CropRequest;
 import com.balirajahub.dto.response.CropResponse;
+import com.balirajahub.entity.Crop;
+import com.balirajahub.entity.FarmerProfile;
 
 import java.util.List;
 
@@ -12,5 +14,6 @@ public interface CropService {
     CropResponse updateCrop(Long id, CropRequest request);
     void deleteCrop(Long id);
     CropResponse getCropById(Long id);
+    List<Crop> getCurrentFarmerCrops();
 
 }

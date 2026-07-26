@@ -8,15 +8,12 @@ import com.balirajahub.entity.User;
 import com.balirajahub.entity.enums.CropStatus;
 import com.balirajahub.exception.CropNotFoundException;
 import com.balirajahub.exception.FarmerProfileNotFoundException;
-import com.balirajahub.exception.UserNotFoundException;
 import com.balirajahub.repository.CropRepository;
 import com.balirajahub.repository.FarmerProfileRepository;
-import com.balirajahub.repository.UserRepository;
 import com.balirajahub.service.AuthenticatedUserService;
 import com.balirajahub.service.CropService;
+import com.balirajahub.service.FarmerProfileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +27,8 @@ public class CropServiceImpl implements CropService {
     private final FarmerProfileRepository farmerProfileRepository;
 
     private final AuthenticatedUserService authenticatedUserService;
+
+    private final FarmerProfileService farmerProfileService;
 
     @Override
     public CropResponse createCrop(CropRequest request) {
@@ -128,6 +127,18 @@ public class CropServiceImpl implements CropService {
                                         "Crop not found."));
 
         return mapToResponse(crop);
+    }
+
+
+    @Override
+    public List<Crop> getCurrentFarmerCrops() {
+
+        FarmerProfile farmerProfile =
+                farmerProfileService.getCurrentFarmerProfile();
+
+        return cropRepository.findByFarmerProfile(
+                farmerProfile
+        );
     }
 
     private CropResponse mapToResponse(Crop crop) {

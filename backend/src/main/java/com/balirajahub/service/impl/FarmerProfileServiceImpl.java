@@ -5,21 +5,17 @@ import com.balirajahub.dto.response.FarmerProfileResponse;
 import com.balirajahub.entity.FarmerProfile;
 import com.balirajahub.exception.*;
 import com.balirajahub.repository.FarmerProfileRepository;
-import com.balirajahub.repository.UserRepository;
 import com.balirajahub.service.AuthenticatedUserService;
 import com.balirajahub.service.FarmerProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.balirajahub.entity.User;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -93,6 +89,20 @@ public class FarmerProfileServiceImpl implements FarmerProfileService {
         farmerProfileRepository.save(profile);
 
         return mapToResponse(user, profile);
+    }
+
+    @Override
+    public FarmerProfile getCurrentFarmerProfile() {
+
+        User currentUser =
+                authenticatedUserService.getCurrentUser();
+
+        return farmerProfileRepository
+                .findByUser(currentUser)
+                .orElseThrow(() ->
+                        new FarmerProfileNotFoundException(
+                                "Farmer profile not found."
+                        ));
     }
 
 

@@ -136,4 +136,46 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
+    @ExceptionHandler(GeminiApiException.class)
+    public ResponseEntity<ApiResponse<Void>> handleGeminiApiException(
+            GeminiApiException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CropNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleCropNotFoundException(
+            CropNotFoundException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(FarmDiaryNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleFarmDiaryNotFoundException(
+            FarmDiaryNotFoundException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Object>> handleException(
+            Exception ex) {
+
+        ex.printStackTrace();
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(
+                        ApiResponse.error(
+                                "Something went wrong. Please try again later."
+                        )
+                );
+    }
+
 }
