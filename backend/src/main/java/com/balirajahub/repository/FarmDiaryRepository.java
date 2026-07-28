@@ -31,4 +31,7 @@ public interface FarmDiaryRepository
             DiaryActivityType activityType
     );
 
+    long countByFarmerProfile(FarmerProfile farmerProfile);
+
+
 }
