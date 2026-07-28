@@ -16,5 +16,5 @@ public enum NotificationType {
 
     AI,
 
-    SYSTEM
+    REMINDER, SYSTEM
 }
