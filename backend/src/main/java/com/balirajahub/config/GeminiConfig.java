@@ -6,9 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConfigurationProperties(prefix = "gemini")
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "gemini")
 public class GeminiConfig {
 
     private String apiKey;
@@ -16,5 +16,4 @@ public class GeminiConfig {
     private String model;
 
     private String baseUrl;
-
 }
