@@ -1,26 +1,54 @@
 package com.balirajahub.controller;
 
 import com.balirajahub.common.ApiResponse;
-import com.balirajahub.dto.response.WeatherResponse;
-import com.balirajahub.service.WeatherService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/farmer/weather")
+@RequestMapping("/api/weather")
 @RequiredArgsConstructor
 public class WeatherController {
 
-    private final WeatherService weatherService;
+    @Value("${weather.api.key}")
+    private String apiKey;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/current")
-    public ApiResponse<WeatherResponse> currentWeather() {
+    public ApiResponse<Map<String, Object>> getCurrentWeather(
+            @RequestParam String district) {
+
+        String url =
+                "https://api.openweathermap.org/data/2.5/weather?q="
+                        + district
+                        + ",IN&units=metric&appid="
+                        + apiKey;
+
+        Map response =
+                restTemplate.getForObject(url, Map.class);
+
+        Map main = (Map) response.get("main");
+
+        Object weatherObject =
+                ((java.util.List<?>) response.get("weather"))
+                        .get(0);
+
+        Map weatherMap = (Map) weatherObject;
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("temperature", main.get("temp"));
+        result.put("humidity", main.get("humidity"));
+        result.put("condition", weatherMap.get("description"));
 
         return ApiResponse.success(
                 "Weather fetched successfully.",
-                weatherService.getCurrentWeather()
+                result
         );
     }
 }

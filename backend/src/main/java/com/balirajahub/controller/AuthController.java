@@ -22,6 +22,8 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> register(
             @Valid @RequestBody RegisterRequest request) {
 
+        System.out.println("AUTH CONTROLLER REGISTER HIT");
+
         AuthResponse response = authService.register(request);
 
         return ResponseEntity

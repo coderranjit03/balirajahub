@@ -49,3 +49,18 @@ application-local.properties
 ### Mac ###
 .AppleDouble
 .LSOverride
+
+# Backend uploads
+uploads/
+backend/uploads/
+
+# Spring Boot
+backend/target/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Environment
+backend/.env
+frontend/.env
