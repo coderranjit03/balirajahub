@@ -138,29 +138,54 @@ export default function CropsPage() {
   return (
     <DashboardLayout>
       <div className="space-y-8 px-1 pt-6 sm:px-2 lg:px-4 lg:pt-8">
-        {/* Header */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-4">
-            <Link
-              to="/dashboard"
-              className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-200 bg-white text-emerald-700 shadow-sm transition hover:bg-emerald-50"
-            >
-              <ArrowLeft size={22} />
-            </Link>
+        {/* Hero Header */}
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-emerald-700 via-green-600 to-lime-500 p-8 text-white shadow-2xl shadow-emerald-600/20">
+          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10"></div>
 
-            <div>
-              <h1 className="text-4xl font-bold text-emerald-700">
-                🌱 My Crops
-              </h1>
+          <div className="absolute -bottom-16 right-24 h-56 w-56 rounded-full bg-white/5"></div>
 
-              <p className="mt-2 text-slate-600">
-                Manage all your crop activities, sowing dates, and harvest planning in one place.
+          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-4">
+              <Link
+                to="/dashboard"
+                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-white backdrop-blur-md transition hover:bg-white/25"
+              >
+                <ArrowLeft size={22} />
+              </Link>
+
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-emerald-100">
+                  Crop Management
+                </p>
+
+                <h1 className="mt-2 text-4xl font-bold leading-tight lg:text-5xl">
+                  🌱 My Crops
+                </h1>
+
+                <p className="mt-3 max-w-2xl text-lg leading-relaxed text-emerald-50">
+                  Manage all your crop activities, sowing dates, irrigation planning,
+                  and expected harvests in one beautiful dashboard.
+                </p>
+              </div>
+            </div>
+
+            <div className="w-full max-w-xs rounded-3xl border border-white/20 bg-white/15 p-5 backdrop-blur-md shadow-lg">
+              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-100">
+                Crop Overview
+              </p>
+
+              <div className="mt-4 flex items-end gap-2">
+                <span className="text-5xl font-bold text-white">{crops.length}</span>
+
+                <span className="mb-1 text-sm font-semibold text-emerald-100">
+                  total crops
+                </span>
+              </div>
+
+              <p className="mt-3 text-sm text-emerald-50">
+                Active crop records available for tracking.
               </p>
             </div>
-          </div>
-
-          <div className="rounded-2xl bg-white/80 px-4 py-3 text-sm font-medium text-emerald-700 shadow-md backdrop-blur-md">
-            Total Crops: <span className="font-bold">{crops.length}</span>
           </div>
         </div>
 

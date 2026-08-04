@@ -20,25 +20,26 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-
     try {
-
       // Login API
       const response = await loginUser(data);
 
       console.log("FULL LOGIN RESPONSE:", response);
 
-      const token = response?.data?.accessToken;
+      // FIXED
+      const token = response?.accessToken;
+
+      console.log("TOKEN:", token);
 
       if (!token) {
-
         toast.error("Token not received from server");
-
         return;
       }
 
       // Save JWT token
       localStorage.setItem("token", token);
+
+      console.log("STORED TOKEN:", localStorage.getItem("token"));
 
       // Check farmer profile status
       const statusResponse = await api.get(
@@ -54,20 +55,13 @@ export default function LoginPage() {
 
       toast.success("Login successful 🌾");
 
-      // Redirect based on profile status
       if (hasProfile) {
-
         navigate("/dashboard");
-
       } else {
-
         toast("Please complete your farmer profile first 🌱");
-
         navigate("/profile/setup");
       }
-
     } catch (error) {
-
       console.error(error);
 
       toast.error(

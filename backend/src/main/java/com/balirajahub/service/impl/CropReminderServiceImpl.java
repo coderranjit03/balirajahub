@@ -49,13 +49,19 @@ public class CropReminderServiceImpl
                         new FarmerProfileNotFoundException(
                                 "Farmer profile not found."));
 
-        Crop crop = cropRepository
-                .findByIdAndFarmerProfile(
-                        request.getCropId(),
-                        farmerProfile)
-                .orElseThrow(() ->
-                        new CropNotFoundException(
-                                "Crop not found."));
+        Crop crop = null;
+
+        // Crop is optional
+        if (request.getCropId() != null) {
+
+            crop = cropRepository
+                    .findByIdAndFarmerProfile(
+                            request.getCropId(),
+                            farmerProfile)
+                    .orElseThrow(() ->
+                            new CropNotFoundException(
+                                    "Crop not found."));
+        }
 
         CropReminder reminder = CropReminder.builder()
 
@@ -78,6 +84,7 @@ public class CropReminderServiceImpl
         return mapToResponse(
                 cropReminderRepository.save(reminder));
     }
+
 
     // ==========================================
     // Get My Reminders
@@ -162,13 +169,19 @@ public class CropReminderServiceImpl
                         new CropReminderNotFoundException(
                                 "Reminder not found."));
 
-        Crop crop = cropRepository
-                .findByIdAndFarmerProfile(
-                        request.getCropId(),
-                        farmerProfile)
-                .orElseThrow(() ->
-                        new CropNotFoundException(
-                                "Crop not found."));
+        Crop crop = null;
+
+        // Crop is optional
+        if (request.getCropId() != null) {
+
+            crop = cropRepository
+                    .findByIdAndFarmerProfile(
+                            request.getCropId(),
+                            farmerProfile)
+                    .orElseThrow(() ->
+                            new CropNotFoundException(
+                                    "Crop not found."));
+        }
 
         reminder.setTitle(request.getTitle());
 
@@ -248,7 +261,7 @@ public class CropReminderServiceImpl
     // Mapper
     // ==========================================
 
-    private CropReminderResponse mapToResponse(
+        private CropReminderResponse mapToResponse(
             CropReminder reminder) {
 
         return CropReminderResponse.builder()
@@ -265,9 +278,17 @@ public class CropReminderServiceImpl
 
                 .status(reminder.getStatus())
 
-                .cropId(reminder.getCrop().getId())
+                .cropId(
+                        reminder.getCrop() != null
+                                ? reminder.getCrop().getId()
+                                : null
+                )
 
-                .cropName(reminder.getCrop().getCropName())
+                .cropName(
+                        reminder.getCrop() != null
+                                ? reminder.getCrop().getCropName()
+                                : "General Reminder"
+                )
 
                 .createdAt(reminder.getCreatedAt())
 
@@ -275,4 +296,5 @@ public class CropReminderServiceImpl
 
                 .build();
     }
+
 }

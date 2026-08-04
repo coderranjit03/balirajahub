@@ -3,6 +3,9 @@ import {
   LayoutDashboard,
   Sprout,
   User,
+  BookOpen,
+  IndianRupee,
+  Bell,
   LogOut,
 } from "lucide-react";
 
@@ -20,6 +23,21 @@ export default function DashboardLayout({ children }) {
       name: "My Crops",
       path: "/crops",
       icon: Sprout,
+    },
+    {
+      name: "Farm Diary",
+      path: "/farm-diary",
+      icon: BookOpen,
+    },
+    {
+      name: "Expenses",
+      path: "/expenses",
+      icon: IndianRupee,
+    },
+    {
+      name: "Reminders",
+      path: "/reminders",
+      icon: Bell,
     },
     {
       name: "My Profile",
@@ -58,10 +76,13 @@ export default function DashboardLayout({ children }) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-2 p-4 overflow-y-auto">
+        <nav className="flex-1 space-y-2 overflow-y-auto p-4">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const active = location.pathname === item.path;
+
+            const active =
+              location.pathname === item.path ||
+              location.pathname.startsWith(item.path + "/");
 
             return (
               <Link

@@ -52,12 +52,18 @@ public class SecurityConfig {
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                                 // Farmer APIs
+                                // Farmer APIs
                                 .requestMatchers(
                                         "/api/farmer/**",
+                                        "/api/reminders/**",
+                                        "/api/farm-diary/**",
+                                        "/api/expenses/**",
+                                        "/api/dashboard/**",
+                                        "/api/weather/**",
                                         "/api/market/**",
                                         "/api/schemes/**",
                                         "/api/notifications/**"
-                                        ).hasAnyRole("FARMER", "ADMIN")
+                                ).authenticated()
 
                                 // Any other API
                                 .anyRequest().authenticated()
@@ -89,7 +95,14 @@ public class SecurityConfig {
         );
 
         configuration.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                List.of(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "PATCH",
+                        "DELETE",
+                        "OPTIONS"
+                )
         );
 
         configuration.setAllowedHeaders(List.of("*"));

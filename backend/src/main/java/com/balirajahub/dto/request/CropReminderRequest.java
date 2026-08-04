@@ -27,6 +27,6 @@ public class CropReminderRequest {
     @NotNull(message = "Reminder date is required.")
     private LocalDate reminderDate;
 
-    @NotNull(message = "Crop id is required.")
+    // Optional
     private Long cropId;
 }

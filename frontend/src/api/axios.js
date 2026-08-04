@@ -5,17 +5,23 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-
   const token = localStorage.getItem("token");
 
-  // Skip auth endpoints
+  console.log("JWT TOKEN:", token);
+
   const isAuthRequest =
     config.url?.includes("/api/auth/login") ||
     config.url?.includes("/api/auth/register");
 
   if (token && !isAuthRequest) {
+    config.headers = config.headers || {};
 
     config.headers.Authorization = `Bearer ${token}`;
+
+    console.log(
+      "Authorization header set:",
+      config.headers.Authorization
+    );
   }
 
   return config;

@@ -4,6 +4,7 @@ import com.balirajahub.dto.response.DashboardSummaryResponse;
 import com.balirajahub.entity.FarmerProfile;
 import com.balirajahub.entity.User;
 import com.balirajahub.entity.enums.CropStatus;
+import com.balirajahub.entity.enums.ReminderStatus;
 import com.balirajahub.exception.FarmerProfileNotFoundException;
 import com.balirajahub.repository.CropRepository;
 import com.balirajahub.repository.ExpenseRepository;
@@ -14,6 +15,8 @@ import com.balirajahub.service.DashboardService;
 import com.balirajahub.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.balirajahub.repository.CropReminderRepository;
+
 
 import java.time.LocalDate;
 
@@ -34,6 +37,9 @@ public class DashboardServiceImpl
 
     private final AuthenticatedUserService authenticatedUserService;
 
+    private final CropReminderRepository cropReminderRepository;
+
+
     @Override
     public DashboardSummaryResponse getDashboardSummary() {
 
@@ -51,9 +57,9 @@ public class DashboardServiceImpl
 
         return DashboardSummaryResponse.builder()
 
-                .totalCrops(
-                        cropRepository.countByFarmerProfile(
-                                farmerProfile))
+             .totalCrops(
+                cropRepository.countByFarmerProfile(
+                        farmerProfile))
 
                 .activeCrops(
                         cropRepository.countByFarmerProfileAndStatus(
@@ -81,6 +87,12 @@ public class DashboardServiceImpl
                                         farmerProfile,
                                         today,
                                         nextThirtyDays))
+
+                // ✅ ADD THIS
+                .pendingReminders(
+                        cropReminderRepository.countByFarmerProfileAndStatus(
+                                farmerProfile,
+                                ReminderStatus.PENDING))
 
                 .build();
     }

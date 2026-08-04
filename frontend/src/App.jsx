@@ -10,6 +10,8 @@ import ProfileSetupPage from "./pages/profile/ProfileSetupPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import LandingPage from "./pages/public/LandingPage";
 import FarmDiaryPage from "./pages/farm-diary/FarmDiaryPage";
+import ExpensesPage from "./pages/expenses/ExpensesPage";
+import RemindersPage from "./pages/reminders/RemindersPage";
 
 export default function App() {
   return (
@@ -63,6 +65,24 @@ export default function App() {
           element={
             <ProtectedRoute>
               <FarmDiaryPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/expenses"
+          element={
+            <ProtectedRoute>
+              <ExpensesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/reminders"
+          element={
+            <ProtectedRoute>
+              <RemindersPage />
             </ProtectedRoute>
           }
         />

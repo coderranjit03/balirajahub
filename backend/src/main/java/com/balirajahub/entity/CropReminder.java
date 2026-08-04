@@ -35,8 +35,9 @@ public class CropReminder extends BaseEntity {
     @Column(nullable = false)
     private ReminderStatus status;
 
+    // Optional crop relation
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "crop_id", nullable = false)
+    @JoinColumn(name = "crop_id", nullable = true)
     private Crop crop;
 
     @ManyToOne(fetch = FetchType.LAZY)

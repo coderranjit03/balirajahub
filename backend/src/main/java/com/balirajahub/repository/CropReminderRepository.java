@@ -66,4 +66,14 @@ public interface CropReminderRepository
             ReminderStatus status
     );
 
+    // ==========================================
+    // Count pending reminders
+    // ==========================================
+
+    long countByFarmerProfileAndStatus(
+            FarmerProfile farmerProfile,
+            ReminderStatus status
+    );
+
+
 }

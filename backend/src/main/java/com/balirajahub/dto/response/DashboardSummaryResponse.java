@@ -25,4 +25,7 @@ public class DashboardSummaryResponse {
 
     private Long upcomingHarvests;
 
+    // ✅ ADD THIS
+    private Long pendingReminders;
+
 }

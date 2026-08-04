@@ -8,11 +8,13 @@ import {
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { getCurrentWeather } from "../../services/weatherService";
-import { getFarmerProfile } from "../../services/farmerProfileService";
-
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import AiAdvisor from "../../components/ai/AiAdvisor";
+
+import { getDashboardStats } from "../../services/dashboardService";
+import { getCurrentWeather } from "../../services/weatherService";
+import { getFarmerProfile } from "../../services/farmerProfileService";
+import { getUpcomingReminders } from "../../services/reminderService";
 
 function StatCard({ icon: Icon, title, value, color }) {
   return (
@@ -33,6 +35,14 @@ function StatCard({ icon: Icon, title, value, color }) {
 }
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState({
+    totalCrops: 0,
+    totalDiaryEntries: 0,
+    totalExpenseAmount: 0,
+    pendingReminders: 0,
+  });
+
+  const [upcomingReminders, setUpcomingReminders] = useState([]);
 
   const [farmerName, setFarmerName] = useState("Farmer");
 
@@ -48,30 +58,19 @@ export default function DashboardPage() {
   });
 
   const getGreeting = () => {
-
     const hour = new Date().getHours();
 
-    if (hour >= 5 && hour < 12) {
-      return "Good Morning 🌅";
-    }
-
-    if (hour >= 12 && hour < 17) {
-      return "Good Afternoon ☀️";
-    }
-
-    if (hour >= 17 && hour < 21) {
-      return "Good Evening 🌇";
-    }
+    if (hour >= 5 && hour < 12) return "Good Morning 🌅";
+    if (hour >= 12 && hour < 17) return "Good Afternoon ☀️";
+    if (hour >= 17 && hour < 21) return "Good Evening 🌇";
 
     return "Good Night 🌙";
   };
 
   useEffect(() => {
-
     const loadDashboardData = async () => {
-
       try {
-
+        // 1. Farmer profile
         const profile = await getFarmerProfile();
 
         setFarmerName(profile.firstName || "Farmer");
@@ -81,28 +80,30 @@ export default function DashboardPage() {
           district: profile.district,
         });
 
+        // 2. Weather
         if (profile.district) {
-
-          const weatherData = await getCurrentWeather(
-            profile.district
-          );
-
+          const weatherData = await getCurrentWeather(profile.district);
           setWeather(weatherData);
         }
 
-      } catch (error) {
+        // 3. Dashboard stats
+        const dashboardStats = await getDashboardStats();
+        setStats(dashboardStats);
 
+        // 4. Upcoming reminders
+        const upcoming = await getUpcomingReminders();
+        setUpcomingReminders(upcoming);
+
+      } catch (error) {
         console.error("Dashboard load failed:", error);
       }
     };
 
     loadDashboardData();
-
   }, []);
 
   return (
     <DashboardLayout>
-
       <div className="min-h-screen overflow-hidden p-6">
 
         {/* Decorative Background */}
@@ -194,28 +195,28 @@ export default function DashboardPage() {
             <StatCard
               icon={Sprout}
               title="Total Crops"
-              value="5"
+              value={stats.totalCrops}
               color="bg-emerald-500"
             />
 
             <StatCard
               icon={IndianRupee}
-              title="This Month Expenses"
-              value="₹12,500"
+              title="Total Expenses"
+              value={`₹${Number(stats.totalExpenseAmount ?? 0).toLocaleString()}`}
               color="bg-green-500"
             />
 
             <StatCard
               icon={Bell}
               title="Pending Reminders"
-              value="3"
+              value={stats.pendingReminders ?? 0}
               color="bg-amber-500"
             />
 
             <StatCard
               icon={CalendarDays}
               title="Farm Diary Entries"
-              value="18"
+              value={stats.totalDiaryEntries}
               color="bg-lime-500"
             />
           </div>
@@ -230,13 +231,19 @@ export default function DashboardPage() {
               🌱 Manage Crops
             </Link>
 
-            <button className="inline-flex items-center gap-2 rounded-2xl bg-white/80 px-6 py-3 font-semibold text-emerald-700 shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg">
+            <Link
+              to="/expenses"
+              className="inline-flex items-center gap-2 rounded-2xl bg-white/80 px-6 py-3 font-semibold text-emerald-700 shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg"
+            >
               💰 Add Expense
-            </button>
+            </Link>
 
-            <button className="inline-flex items-center gap-2 rounded-2xl bg-white/80 px-6 py-3 font-semibold text-emerald-700 shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg">
+            <Link
+              to="/reminders"
+              className="inline-flex items-center gap-2 rounded-2xl bg-white/80 px-6 py-3 font-semibold text-emerald-700 shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg"
+            >
               📅 Add Reminder
-            </button>
+            </Link>
 
             <Link
               to="/farm-diary"
@@ -271,70 +278,64 @@ export default function DashboardPage() {
                   </h3>
 
                   <p className="text-sm text-slate-500">
-                    Important farming activities
+                    Your next pending reminders
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              {upcomingReminders.length > 0 ? (
+                <div className="space-y-4">
+                  {upcomingReminders.map((reminder) => (
+                    <div
+                      key={reminder.id}
+                      className="rounded-2xl border border-amber-100 bg-amber-50 p-4 transition hover:shadow-md"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-amber-700">
+                            {reminder.title}
+                          </p>
 
-                <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 transition hover:shadow-md">
+                          <p className="mt-1 text-xs font-medium text-slate-500">
+                            🌱 {reminder.cropName || "General Reminder"}
+                          </p>
 
-                  <div className="flex items-start justify-between">
+                          {reminder.description && (
+                            <p className="mt-1 text-sm text-slate-600">
+                              {reminder.description}
+                            </p>
+                          )}
 
-                    <div>
+                          <p className="mt-2 text-xs text-slate-500">
+                            📅 {reminder.reminderDate}
+                          </p>
+                        </div>
 
-                      <p className="font-semibold text-emerald-700">
-                        Irrigation
-                      </p>
-
-                      <p className="mt-1 text-sm text-slate-600">
-                        Field 2 • Tomorrow • 7:00 AM
-                      </p>
+                        <span className="text-lg">🔔</span>
+                      </div>
                     </div>
-
-                    <span className="text-lg">💧</span>
-                  </div>
+                  ))}
                 </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-amber-200 bg-white/70 p-8 text-center">
+                  <div className="text-4xl">📅</div>
 
-                <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 transition hover:shadow-md">
+                  <h4 className="mt-3 text-lg font-semibold text-slate-800">
+                    No upcoming reminders
+                  </h4>
 
-                  <div className="flex items-start justify-between">
+                  <p className="mt-1 text-sm text-slate-500">
+                    Add reminders to keep track of important farming activities.
+                  </p>
 
-                    <div>
-
-                      <p className="font-semibold text-amber-700">
-                        Fertilizer Application
-                      </p>
-
-                      <p className="mt-1 text-sm text-slate-600">
-                        Soybean Plot • 2 Aug • 8:00 AM
-                      </p>
-                    </div>
-
-                    <span className="text-lg">🌱</span>
-                  </div>
+                  <Link
+                    to="/reminders"
+                    className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                  >
+                    Add Reminder
+                  </Link>
                 </div>
-
-                <div className="rounded-2xl border border-lime-100 bg-lime-50 p-4 transition hover:shadow-md">
-
-                  <div className="flex items-start justify-between">
-
-                    <div>
-
-                      <p className="font-semibold text-lime-700">
-                        Harvest Planning
-                      </p>
-
-                      <p className="mt-1 text-sm text-slate-600">
-                        Tomato Section • 10 Aug • 6:00 AM
-                      </p>
-                    </div>
-
-                    <span className="text-lg">🌾</span>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -344,7 +345,6 @@ export default function DashboardPage() {
           </div>
         </main>
       </div>
-
     </DashboardLayout>
   );
 }

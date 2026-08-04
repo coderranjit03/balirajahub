@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import {
-  BookOpen,
-  CalendarDays,
+  IndianRupee,
   Plus,
   Pencil,
   Trash2,
   X,
+  CalendarDays,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -13,63 +13,66 @@ import { ArrowLeft } from "lucide-react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 
 import {
-  getAllDiaryEntries,
-  createDiaryEntry,
-  updateDiaryEntry,
-  deleteDiaryEntry,
-} from "../../services/farmDiaryService";
+  getAllExpenses,
+  createExpense,
+  updateExpense,
+  deleteExpense,
+} from "../../services/expenseService";
 
-export default function FarmDiaryPage() {
-  const [entries, setEntries] = useState([]);
+export default function ExpensesPage() {
+  const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingEntryId, setEditingEntryId] = useState(null);
+  const [editingExpenseId, setEditingExpenseId] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
     description: "",
-    entryDate: "",
-    activityType: "",
+    amount: "",
+    expenseDate: "",
+    category: "",
   });
 
-  const loadData = async () => {
+  const loadExpenses = async () => {
     try {
       setLoading(true);
 
-      const diaryData = await getAllDiaryEntries();
+      const data = await getAllExpenses();
 
-      setEntries(diaryData || []);
+      setExpenses(data || []);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to load farm diary");
+      toast.error("Failed to load expenses");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    loadExpenses();
   }, []);
 
   const resetForm = () => {
     setForm({
       title: "",
       description: "",
-      entryDate: "",
-      activityType: "",
+      amount: "",
+      expenseDate: "",
+      category: "",
     });
 
-    setEditingEntryId(null);
+    setEditingExpenseId(null);
   };
 
-  const handleEdit = (entry) => {
-    setEditingEntryId(entry.id);
+  const handleEdit = (expense) => {
+    setEditingExpenseId(expense.id);
 
     setForm({
-      title: entry.title || "",
-      description: entry.description || "",
-      entryDate: entry.entryDate || "",
-      activityType: entry.activityType || "",
+      title: expense.title || "",
+      description: expense.description || "",
+      amount: expense.amount?.toString() || "",
+      expenseDate: expense.expenseDate || "",
+      category: expense.category || "",
     });
 
     window.scrollTo({
@@ -85,31 +88,24 @@ export default function FarmDiaryPage() {
       setSaving(true);
 
       const payload = {
-        title: form.title,
-        description: form.description,
-        entryDate: form.entryDate,
-        activityType: form.activityType,
+        ...form,
+        amount: Number(form.amount),
       };
 
-      if (editingEntryId) {
-        await updateDiaryEntry(editingEntryId, payload);
-
-        toast.success("Activity updated successfully 🌾");
+      if (editingExpenseId) {
+        await updateExpense(editingExpenseId, payload);
+        toast.success("Expense updated successfully 💰");
       } else {
-        await createDiaryEntry(payload);
-
-        toast.success("Activity added successfully 🌾");
+        await createExpense(payload);
+        toast.success("Expense added successfully 💰");
       }
 
       resetForm();
-
-      await loadData();
+      await loadExpenses();
     } catch (error) {
       console.error(error);
-
       toast.error(
-        error.response?.data?.message ||
-          "Failed to save activity"
+        error.response?.data?.message || "Failed to save expense"
       );
     } finally {
       setSaving(false);
@@ -118,22 +114,34 @@ export default function FarmDiaryPage() {
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this activity?"
+      "Are you sure you want to delete this expense?"
     );
 
     if (!confirmed) return;
 
     try {
-      await deleteDiaryEntry(id);
+      await deleteExpense(id);
 
-      await loadData();
+      await loadExpenses();
 
-      toast.success("Activity deleted successfully 🗑️");
+      toast.success("Expense deleted successfully 🗑️");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete activity");
+      toast.error("Failed to delete expense");
     }
   };
+
+  const totalThisMonth = expenses
+    .filter((expense) => {
+      const expenseDate = new Date(expense.expenseDate);
+      const now = new Date();
+
+      return (
+        expenseDate.getMonth() === now.getMonth() &&
+        expenseDate.getFullYear() === now.getFullYear()
+      );
+    })
+    .reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
 
   return (
     <DashboardLayout>
@@ -156,44 +164,42 @@ export default function FarmDiaryPage() {
 
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-100">
-                Farm Activities
+                Expense Tracking
               </p>
 
               <h1 className="mt-2 text-4xl font-bold leading-tight lg:text-5xl">
-                📒 Farm Diary
+                💰 Farm Expenses
               </h1>
 
               <p className="mt-3 max-w-2xl text-lg leading-relaxed text-emerald-50">
-                Record irrigation, fertilizer usage, pest observations, and daily farming activities.
+                Track seeds, fertilizer, irrigation, labour, and other farming expenses in one place.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Add/Edit Form */}
+        {/* Form */}
         <div className="rounded-[2rem] border border-white/40 bg-white/80 p-6 shadow-xl backdrop-blur-md">
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
-                {editingEntryId ? <Pencil size={24} /> : <Plus size={24} />}
+                {editingExpenseId ? <Pencil size={24} /> : <Plus size={24} />}
               </div>
 
               <div>
                 <h2 className="text-2xl font-bold text-emerald-700">
-                  {editingEntryId
-                    ? "✏️ Edit Activity"
-                    : "🌱 Add New Activity"}
+                  {editingExpenseId ? "✏️ Edit Expense" : "➕ Add Expense"}
                 </h2>
 
                 <p className="text-sm text-slate-500">
-                  {editingEntryId
-                    ? "Update your farm activity details."
-                    : "Keep a daily record of important farm operations."}
+                  {editingExpenseId
+                    ? "Update expense details."
+                    : "Record a new farm expense."}
                 </p>
               </div>
             </div>
 
-            {editingEntryId && (
+            {editingExpenseId && (
               <button
                 type="button"
                 onClick={resetForm}
@@ -209,82 +215,70 @@ export default function FarmDiaryPage() {
             onSubmit={handleSubmit}
             className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
           >
-            {/* Title */}
-            <div className="flex flex-col gap-2 md:col-span-2">
-              <label className="text-sm font-semibold text-slate-700">
-                Activity Title
-              </label>
+            <input
+              placeholder="Expense title"
+              value={form.title}
+              onChange={(e) =>
+                setForm({ ...form, title: e.target.value })
+              }
+              className="rounded-2xl border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            />
 
-              <input
-                placeholder="e.g. Drip irrigation for tomato field"
-                value={form.title}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    title: e.target.value,
-                  })
-                }
-                className="rounded-2xl border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                required
-              />
-            </div>
+            <select
+              value={form.category}
+              onChange={(e) =>
+                setForm({ ...form, category: e.target.value })
+              }
+              className="rounded-2xl border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            >
+              <option value="">Select Category</option>
+              <option value="SEED">🌱 Seed</option>
+              <option value="FERTILIZER">🧪 Fertilizer</option>
+              <option value="PESTICIDE">🐛 Pesticide</option>
+              <option value="LABOUR">👷 Labour</option>
+              <option value="MACHINERY">🚜 Machinery</option>
+              <option value="IRRIGATION">💧 Irrigation</option>
+              <option value="TRANSPORT">🚚 Transport</option>
+              <option value="EQUIPMENT">🛠️ Equipment</option>
+              <option value="OTHER">📌 Other</option>
+            </select>
 
-            {/* Activity Type */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700">
-                Activity Type
-              </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Amount"
+              value={form.amount}
+              onChange={(e) =>
+                setForm({ ...form, amount: e.target.value })
+              }
+              className="rounded-2xl border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            />
 
-              <select
-                value={form.activityType}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    activityType: e.target.value,
-                  })
-                }
-                className="rounded-2xl border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                required
-              >
-                <option value="">Select Activity</option>
-                <option value="SOWING">🌱 Sowing</option>
-                <option value="IRRIGATION">💧 Irrigation</option>
-                <option value="FERTILIZER">🧪 Fertilizer</option>
-                <option value="PEST_CONTROL">🐛 Pest Control</option>
-                <option value="HARVEST">🌾 Harvest</option>
-                <option value="OTHER">📌 Other</option>
-              </select>
-            </div>
+            <input
+              type="date"
+              value={form.expenseDate}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  expenseDate: e.target.value,
+                })
+              }
+              className="rounded-2xl border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              required
+            />
 
-            {/* Date */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-slate-700">
-                📅 Entry Date
-              </label>
-
-              <input
-                type="date"
-                value={form.entryDate}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    entryDate: e.target.value,
-                  })
-                }
-                className="rounded-2xl border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                required
-              />
-            </div>
-
-            {/* Description */}
-            <div className="flex flex-col gap-2 md:col-span-2 lg:col-span-4">
+            <div className="md:col-span-2 lg:col-span-4 flex flex-col gap-2">
               <label className="text-sm font-semibold text-slate-700">
                 Description
               </label>
 
               <textarea
-                rows="4"
-                placeholder="Write complete details about the activity, observations, fertilizer quantity, irrigation duration, etc."
+                rows="3"
+                placeholder="Write expense details..."
                 value={form.description}
                 onChange={(e) =>
                   setForm({
@@ -293,30 +287,29 @@ export default function FarmDiaryPage() {
                   })
                 }
                 className="rounded-2xl border border-emerald-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                required
               />
             </div>
 
-            {/* Submit */}
-            <div className="flex justify-end md:col-span-2 lg:col-span-4">
+            <div className="md:col-span-2 lg:col-span-4 flex justify-end pt-2">
               <button
                 type="submit"
                 disabled={saving}
                 className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3 font-semibold text-white shadow-md transition hover:bg-emerald-700 disabled:opacity-60"
               >
+                <IndianRupee size={18} />
                 {saving
-                  ? editingEntryId
+                  ? editingExpenseId
                     ? "Updating..."
                     : "Saving..."
-                  : editingEntryId
-                  ? "Update Activity 🌾"
-                  : "Add Activity 🌾"}
+                  : editingExpenseId
+                  ? "Update Expense"
+                  : "Add Expense"}
               </button>
             </div>
           </form>
         </div>
 
-        {/* Activity List */}
+        {/* Expense List */}
         <div className="rounded-[2rem] border border-white/40 bg-white/80 p-6 shadow-xl backdrop-blur-md">
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-lime-100 text-lime-700">
@@ -325,57 +318,63 @@ export default function FarmDiaryPage() {
 
             <div>
               <h2 className="text-2xl font-bold text-slate-900">
-                Recent Activities
+                Recent Expenses
               </h2>
 
               <p className="text-sm text-slate-500">
-                Your latest farm diary entries
+                Your latest farm expense records
               </p>
             </div>
           </div>
 
           {loading ? (
             <div className="py-12 text-center text-slate-500">
-              Loading diary entries...
+              Loading expenses...
             </div>
-          ) : entries.length > 0 ? (
+          ) : expenses.length > 0 ? (
             <div className="space-y-4">
-              {entries.map((entry) => (
+              {expenses.map((expense) => (
                 <div
-                  key={entry.id}
+                  key={expense.id}
                   className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5 transition hover:shadow-md"
                 >
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <h3 className="text-lg font-bold text-emerald-700">
-                        {entry.title}
+                        {expense.title}
                       </h3>
 
                       <p className="mt-1 text-sm font-semibold text-slate-700">
-                        {entry.activityType}
+                        {expense.category}
                       </p>
 
-                      {entry.description && (
+                      {expense.description && (
                         <p className="mt-2 text-sm text-slate-600">
-                          {entry.description}
+                          {expense.description}
                         </p>
                       )}
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <div className="rounded-xl bg-white px-3 py-2 text-sm font-medium text-slate-600 shadow-sm">
-                        📅 {entry.entryDate}
+                      <div className="rounded-xl bg-white px-4 py-2 text-right shadow-sm">
+                        <p className="text-xs text-slate-500">
+                          {expense.expenseDate}
+                        </p>
+
+                        <p className="text-lg font-bold text-emerald-700">
+                          ₹{Number(expense.amount).toLocaleString()}
+                        </p>
                       </div>
 
                       <button
-                        onClick={() => handleEdit(entry)}
+                        onClick={() => handleEdit(expense)}
                         className="rounded-xl bg-white p-2 text-emerald-600 shadow-sm transition hover:bg-emerald-50"
                       >
                         <Pencil size={16} />
                       </button>
 
                       <button
-                        onClick={() => handleDelete(entry.id)}
+                        onClick={() => handleDelete(expense.id)}
                         className="rounded-xl bg-white p-2 text-red-600 shadow-sm transition hover:bg-red-50"
                       >
                         <Trash2 size={16} />
@@ -387,15 +386,15 @@ export default function FarmDiaryPage() {
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-emerald-200 bg-white/70 p-12 text-center">
-              <div className="text-5xl">📒</div>
+              <div className="text-5xl">💰</div>
 
               <h3 className="mt-4 text-xl font-semibold text-slate-800">
-                No diary entries yet
+                No expenses added yet
               </h3>
 
               <p className="mt-2 text-slate-500">
-                Add your first farm activity to start maintaining a digital
-                farming diary.
+                Start recording your farming expenses to track costs and
+                profitability.
               </p>
             </div>
           )}
